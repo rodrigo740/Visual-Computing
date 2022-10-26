@@ -46,7 +46,7 @@ class VCHelper:
         # triangle properties
         self.tx = self.ty = self.tz = 0.0
         self.angle = 0.0
-        self.sx = self.sy = self.sz = 0.3
+        self.scale = self.sx = self.sy = self.sz = 0.3
 
         # square properties (to use later)
         self.s_tx = 2.0
@@ -113,6 +113,18 @@ class VCHelper:
 
         # TODO: define geometry and color for a square
 
+        self.square_vbo = vbo.VBO(
+            array([
+                [2, 0, 0, 1, 1, 0],
+                [2, 1, 0, 1, 1, 0],
+                [1, 0, 0, 1, 1, 0],
+
+                [1, 1, 0, 1, 1, 0],
+                [2, 1, 0, 1, 1, 0],
+                [1, 0, 0, 1, 1, 0],
+            ], 'f')
+        )
+
 
     def render(self):
 
@@ -147,6 +159,18 @@ class VCHelper:
                 glDrawArrays(GL_TRIANGLES, 0, 3)
 
                 #TODO: draw the square
+                self.square_vbo.bind()
+                glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, None)
+                glEnableVertexAttribArray(0)
+
+                glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * 4, ctypes.c_void_p(3 * 4))
+                glEnableVertexAttribArray(1)
+
+                glUseProgram(self.shader)
+
+                self.compute_transf_matrix_square()
+
+                glDrawArrays(GL_TRIANGLES, 0 , 6)
 
             finally:
                 self.triangle_vbo.unbind()
@@ -165,7 +189,7 @@ class VCHelper:
         projLoc = glGetUniformLocation(self.shader, "projection")
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, self.projMatrix)
 
-        self.viewMatrix = glm.ortho(self.min_x, self.max_x, self.min_y, self.max_y, -5.0, 15.0)
+        #self.viewMatrix = glm.ortho(self.min_x, self.max_x, self.min_y, self.max_y, -5.0, 15.0)
         viewLoc = glGetUniformLocation(self.shader, "view")
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, self.viewMatrix)
 
@@ -173,9 +197,11 @@ class VCHelper:
         """ compute the model matrix for the triangle """
 
         
-        print(self.ty)
+        #print(self.ty) 
         # code needed here
-        self.modelMatrix_triangle = glm.rotate(np.identity(4, np.float32), self.angle, 0, 0, 1.0)
+        self.modelMatrix_triangle = glm.scale(np.identity(4, np.float32), self.scale, self.scale, self.scale)
+
+        self.modelMatrix_triangle = glm.rotate(self.modelMatrix_triangle, self.angle, 0, 0, 1.0)
         #self.modelMatrix_triangle = glm.rotate(self.modelMatrix_triangle, self.angle, 0, 0, 1.0)
         #self.modelMatrix_triangle = glm.scale(self.modelMatrix_triangle, 1, 1, 1)
         #self.modelMatrix_triangle = np.identity(4, np.float32)
