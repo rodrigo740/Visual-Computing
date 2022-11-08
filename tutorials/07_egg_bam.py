@@ -9,18 +9,32 @@ class MyGame(ShowBase):
         super().__init__()
 
         #self.disable_mouse()
-        empty = NodePath("empty")
+        self.empty = NodePath("empty")
 
-        cube = self.loader.loadModel("models/box")
-        cube.setPos(0, 4 ,0)
-        cube.reparentTo(empty)
+        self.cube = self.loader.loadModel("models/box")
+        self.cube.setPos(0, 4 ,0)
+        self.cube.reparentTo(self.empty)
 
-        panda = self.loader.loadModel("models/panda")
-        panda.setPos(-2, 10, 0)
-        panda.setScale(0.2, 0.2, 0.2)
-        panda.reparentTo(cube)
+        self.panda = self.loader.loadModel("models/panda")
+        self.panda.setPos(-2, 10, 0)
+        self.panda.setScale(0.2, 0.2, 0.2)
+        self.panda.reparentTo(self.cube)
 
-        empty.reparentTo(self.render)
+        self.empty.reparentTo(self.render)
+
+        self.x = 0
+        self.y = 4
+        self.speed = 0.02
+
+        self.taskMgr.add(self.update, "update")
+
+    def update(self, task):
+        dt = globalClock.getDt()
+        self.cube.setPos(self.x, self.y, 0,)
+        self.x += self.speed * dt
+        self.y += self.speed * dt
+
+        return task.cont
 
 
 
