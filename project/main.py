@@ -25,7 +25,7 @@ class Pkt():
             self.i = -1
         if self.currPos[1] < 280:
             self.i = 1
-        print(self.currPos)
+        #print(self.currPos)
         return self.currPos
         
 
@@ -55,14 +55,14 @@ class MyGame(ShowBase):
         self.pkts = []
         
         for ((x1, y1), (x2, y2)) in paths:
-            x1 =float(x1)+50
-            y1 =float(y1)+25
+            x1 =float(x1)+60
+            y1 =float(y1)+30
 
-            x2 =float(x2)+50
-            y2 =float(y2)+25
+            x2 =float(x2)+60
+            y2 =float(y2)+30
 
-            print((x1,y1))
-            print((x2,y2))
+            #print((x1,y1))
+            #print((x2,y2))
             """
             m1 = self.loader.loadModel("models/box")
             center = (x1, y1, 0)
@@ -80,6 +80,7 @@ class MyGame(ShowBase):
             """
             
             l1 = self.loader.loadModel("models/misc/sphere")
+            l1.setColor(1,0,0)
             #self.l1.setScale(scale)
             l1.setPos(x1, y1, 0)
             l1.reparentTo(self.render)
@@ -91,6 +92,7 @@ class MyGame(ShowBase):
 
 
             l2 = self.loader.loadModel("models/misc/sphere")
+            l2.setColor(1,0,0)
             #self.l2.setScale(scale)
             l2.setPos(x2, y2, 0)
             l2.reparentTo(self.render)
@@ -158,7 +160,12 @@ class MyGame(ShowBase):
                 h = float(h)
                 model = self.loader.loadModel("models/box")
                 center = (x + w/2, y + h/2, 0)
-                model.setScale(w, h, 50)
+                model.setScale(w, h, 30)
+                
+                p = self.loader.loadModel("models/misc/sphere")
+                p.setPos(center)
+                p.reparentTo(self.render)
+                
                 model.setPos(center)
                 model.reparentTo(self.render)
                 model.setLight(self.alnp)
