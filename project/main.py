@@ -13,18 +13,24 @@ class Pkt():
         self.lightModel = lightModel
         self.plnp = plnp
         self.currPos = path[0]
-        self.i = 1
+        self.i = -1
 
     def nextPos(self):
         self.currPos = (self.currPos[0], self.currPos[1]+self.i)
-        """
-        if (self.currPos[0] > self.path[1][0]) or (self.currPos[1] > self.path[1][1]):
-            self.i = -1
-        """
-        if self.currPos[1] > 350:
-            self.i = -1
-        if self.currPos[1] < 280:
+        #print("Paths: " + str(self.path))
+        
+        if (self.currPos[0] > self.path[1][0]) or (self.currPos[1] < self.path[1][1]):
             self.i = 1
+        if (self.currPos[0] > self.path[1][0]) or (self.currPos[1] > self.path[0][1]):
+            self.i = -1
+
+        if self.currPos[1] < self.path[1][1]:
+            self.i = 1
+
+        #if self.currPos[1] > 350:
+        #    self.i = -1
+        #if self.currPos[1] < 280:
+        #    self.i = 1
         #print(self.currPos)
         return self.currPos
         
@@ -83,7 +89,7 @@ class MyGame(ShowBase):
             l1.setColor(1,0,0)
             #self.l1.setScale(scale)
             l1.setPos(x1, y1, 0)
-            l1.reparentTo(self.render)
+            #l1.reparentTo(self.render)
 
             p1 = PointLight("p1")
             p1.setColor((1, 0, 0, 1))
@@ -95,7 +101,7 @@ class MyGame(ShowBase):
             l2.setColor(1,0,0)
             #self.l2.setScale(scale)
             l2.setPos(x2, y2, 0)
-            l2.reparentTo(self.render)
+            #l2.reparentTo(self.render)
 
             p2 = PointLight("p2")
             p2.setColor((1, 0, 0, 1))
@@ -105,12 +111,15 @@ class MyGame(ShowBase):
 
         
         # generate pkts
+        a = 0
         for ((x1, y1), (x2, y2)) in paths:
-            x1 =float(x1)+50
-            y1 =float(y1)+25
+        
 
-            x2 =float(x2)+50
-            y2 =float(y2)+25
+            x1 =float(x1)+60
+            y1 =float(y1)+30
+
+            x2 =float(x2)+60
+            y2 =float(y2)+30
 
             print((x1,y1))
             print((x2,y2))
@@ -121,11 +130,13 @@ class MyGame(ShowBase):
             light_model.setPos(x1, y1, 0)
 
             plight = PointLight("plight")
-            plight.setColor((1, 1, 1, 1))
+            plight.setColor((0, 1, 0, 1))
             plnp = light_model.attachNewNode(plight)
 
             pkt = Pkt(((x1, y1), (x2, y2)), light_model, plnp)
             self.pkts.append(pkt)
+
+            
         
         
 
@@ -167,7 +178,7 @@ class MyGame(ShowBase):
                 p.reparentTo(self.render)
                 
                 model.setPos(center)
-                model.reparentTo(self.render)
+                #model.reparentTo(self.render)
                 model.setLight(self.alnp)
                 models.append(model)
 
