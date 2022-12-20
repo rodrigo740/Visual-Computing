@@ -2,38 +2,11 @@ from panda3d.core import loadPrcFile, PointLight, AmbientLight
 loadPrcFile("config/conf.prc")
 
 from direct.showbase.ShowBase import ShowBase
-from math import sin, cos, pi
+from math import sin, cos, pi, dist
 import utils.xml_parser as parser
+import utils.Pkt as packet
 import sys
 
-
-class Pkt():
-    def __init__(self, path, lightModel, plnp):
-        self.path = path
-        self.lightModel = lightModel
-        self.plnp = plnp
-        self.currPos = path[0]
-        self.i = -1
-
-    def nextPos(self):
-        self.currPos = (self.currPos[0], self.currPos[1]+self.i)
-        #print("Paths: " + str(self.path))
-        
-        if (self.currPos[0] > self.path[1][0]) or (self.currPos[1] < self.path[1][1]):
-            self.i = 1
-        if (self.currPos[0] > self.path[1][0]) or (self.currPos[1] > self.path[0][1]):
-            self.i = -1
-
-        if self.currPos[1] < self.path[1][1]:
-            self.i = 1
-
-        #if self.currPos[1] > 350:
-        #    self.i = -1
-        #if self.currPos[1] < 280:
-        #    self.i = 1
-        #print(self.currPos)
-        return self.currPos
-        
 
 class MyGame(ShowBase):
     def __init__(self, coords, paths):
@@ -133,7 +106,7 @@ class MyGame(ShowBase):
             plight.setColor((0, 1, 0, 1))
             plnp = light_model.attachNewNode(plight)
 
-            pkt = Pkt(((x1, y1), (x2, y2)), light_model, plnp)
+            pkt = packet.Pkt(((x1, y1), (x2, y2)), light_model, plnp, 20)
             self.pkts.append(pkt)
 
             
@@ -154,7 +127,8 @@ class MyGame(ShowBase):
         ft = globalClock.getFrameTime()
         for pkt in self.pkts:
             newPos = pkt.nextPos()
-            pkt.lightModel.setPos(newPos[0], newPos[1], 0)
+            if newPos != None:
+                pkt.lightModel.setPos(newPos[0], newPos[1], 0)
 
         return task.cont
 
@@ -178,7 +152,7 @@ class MyGame(ShowBase):
                 p.reparentTo(self.render)
                 
                 model.setPos(center)
-                #model.reparentTo(self.render)
+                model.reparentTo(self.render)
                 model.setLight(self.alnp)
                 models.append(model)
 
