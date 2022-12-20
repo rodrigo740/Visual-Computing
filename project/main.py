@@ -62,7 +62,7 @@ class MyGame(ShowBase):
             l1.setColor(1,0,0)
             #self.l1.setScale(scale)
             l1.setPos(x1, y1, 0)
-            #l1.reparentTo(self.render)
+            l1.reparentTo(self.render)
 
             p1 = PointLight("p1")
             p1.setColor((1, 0, 0, 1))
@@ -74,7 +74,7 @@ class MyGame(ShowBase):
             l2.setColor(1,0,0)
             #self.l2.setScale(scale)
             l2.setPos(x2, y2, 0)
-            #l2.reparentTo(self.render)
+            l2.reparentTo(self.render)
 
             p2 = PointLight("p2")
             p2.setColor((1, 0, 0, 1))
@@ -82,32 +82,33 @@ class MyGame(ShowBase):
             plnp = l2.attachNewNode(p2)
             
 
-        
-        # generate pkts
         a = 0
+        # generate pkts
         for ((x1, y1), (x2, y2)) in paths:
-        
+            if a < 4:
+                a += 1
+            else:
 
-            x1 =float(x1)+60
-            y1 =float(y1)+30
+                x1 =float(x1)+60
+                y1 =float(y1)+30
 
-            x2 =float(x2)+60
-            y2 =float(y2)+30
+                x2 =float(x2)+60
+                y2 =float(y2)+30
 
-            print((x1,y1))
-            print((x2,y2))
+                print((x1,y1))
+                print((x2,y2))
 
-            light_model = self.loader.loadModel("models/misc/sphere")
-            #self.light_model.setScale(scale)
-            light_model.reparentTo(self.render)
-            light_model.setPos(x1, y1, 0)
+                light_model = self.loader.loadModel("models/misc/sphere")
+                #self.light_model.setScale(scale)
+                light_model.reparentTo(self.render)
+                light_model.setPos(x1, y1, 0)
 
-            plight = PointLight("plight")
-            plight.setColor((0, 1, 0, 1))
-            plnp = light_model.attachNewNode(plight)
+                plight = PointLight("plight")
+                plight.setColor((0, 1, 0, 1))
+                plnp = light_model.attachNewNode(plight)
 
-            pkt = packet.Pkt(((x1, y1), (x2, y2)), light_model, plnp, 20)
-            self.pkts.append(pkt)
+                pkt = packet.Pkt(((x1, y1), (x2, y2)), light_model, plnp, 20)
+                self.pkts.append(pkt)
 
             
         

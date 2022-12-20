@@ -30,7 +30,7 @@ class Pkt():
 
         totalD = dist(start, end)
         v = totalD/self.time
-        points = [self.endpoints[0]]
+        points = [start]
 
         # Case 1, straight vertical path
         if start[0] == end[0]:
@@ -69,7 +69,7 @@ class Pkt():
         # Case 3, y=mx+b path
         elif (start[0] != end[0]) and (start[1] != end[1]):
             # m = (y2-y1)/(x2-x1)
-            m = (end[1] - start[1])/(start[1] - start[0])
+            m = (end[1] - start[1])/(end[0] - start[0])
             # b = y-mx
             b = end[1] - m * end[0]
 
@@ -79,16 +79,19 @@ class Pkt():
             d = v*t
             cd = 0
             k = 1
-            if x1 > x2:
+            if m < 0:
                 k = -1
             rd = k * d
             while(cd < totalD):
                 for _ in range(75):
                     cd += d
                     x = points[-1][0] + rd
+                    #print(x)
                     points.append((x, m * x + b))
                     if cd >= totalD: break
-
+                    elif x >= end[0]: 
+                        cd = totalD
+                        break
             print("Case 3: y=mx+b path - y = " + str(m) + "x + " + str(b) + " , totalD = " + str(totalD))
         else:
             print("Not a valid path!, exiting....")
@@ -124,5 +127,5 @@ class Pkt():
             nextPos = self.path.pop(0)
         else:
             nextPos = None
-        
+        #print(nextPos)
         return nextPos
