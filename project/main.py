@@ -2,6 +2,7 @@ from panda3d.core import loadPrcFile, PointLight, AmbientLight
 loadPrcFile("config/conf.prc")
 
 from direct.showbase.ShowBase import ShowBase
+from direct.filter.CommonFilters import CommonFilters
 from math import sin, cos, pi, dist
 import utils.xml_parser as parser
 import utils.Pkt as packet
@@ -14,24 +15,24 @@ class MyGame(ShowBase):
         self.accept("escape",sys.exit)
 
         self.set_background_color(0, 0, 0, 1)
-        self.cam.setPos(320, 220, 100)
+        self.cam.setPos(320, 220, 2000)
         #self.cam.setHpr(0, 90, 0)
         #self.camLens.setFov(95)
-        #self.cam.lookAt(320,220,0)
+        self.cam.lookAt(320,220,0)
+
+        self.scaleZ = 30
 
         self.alight = AmbientLight("alight")
         self.alight.setColor((1, 1, 1, 1))
         self.alnp = self.render.attachNewNode(self.alight)
         
-        self.models = self.gen_figs(coords)
+        self.models = self.gen_figs(coords, self.scaleZ)
 
-                
-                
-                
-        
         self.lightX = 0
         self.lightSpeed = 2
         self.pkts = []
+
+        self.count = 1/75
         
         for ((x1, y1), (x2, y2)) in paths:
             x1 =float(x1)+60
@@ -61,7 +62,7 @@ class MyGame(ShowBase):
             l1 = self.loader.loadModel("models/misc/sphere")
             l1.setColor(1,0,0)
             #self.l1.setScale(scale)
-            l1.setPos(x1, y1, 0)
+            l1.setPos(x1, y1, self.scaleZ/2)
             l1.reparentTo(self.render)
 
             p1 = PointLight("p1")
@@ -73,7 +74,7 @@ class MyGame(ShowBase):
             l2 = self.loader.loadModel("models/misc/sphere")
             l2.setColor(1,0,0)
             #self.l2.setScale(scale)
-            l2.setPos(x2, y2, 0)
+            l2.setPos(x2, y2, self.scaleZ/2)
             l2.reparentTo(self.render)
 
             p2 = PointLight("p2")
@@ -81,14 +82,14 @@ class MyGame(ShowBase):
             
             plnp = l2.attachNewNode(p2)
             
+        t = 2
 
-        a = 0
+        filters = CommonFilters(self.win, self.cam)     # halo effect
+        filters.setBloom(size="large")                  # halo effect
+        
         # generate pkts
         for ((x1, y1), (x2, y2)) in paths:
-            if a < 4:
-                a += 1
-            else:
-
+            for _ in range(100):
                 x1 =float(x1)+60
                 y1 =float(y1)+30
 
@@ -99,20 +100,18 @@ class MyGame(ShowBase):
                 print((x2,y2))
 
                 light_model = self.loader.loadModel("models/misc/sphere")
-                #self.light_model.setScale(scale)
+                light_model.setScale(15)
                 light_model.reparentTo(self.render)
-                light_model.setPos(x1, y1, 0)
+                light_model.setPos(x1, y1, self.scaleZ/2)
 
                 plight = PointLight("plight")
                 plight.setColor((0, 1, 0, 1))
                 plnp = light_model.attachNewNode(plight)
 
-                pkt = packet.Pkt(((x1, y1), (x2, y2)), light_model, plnp, 20)
+                pkt = packet.Pkt(((x1, y1), (x2, y2)), light_model, plnp, t)
+                #t += 2
+                #print("T: " + str(t))
                 self.pkts.append(pkt)
-
-            
-        
-        
 
         #self.taskMgr.add(self.move_light, "move-light")
         self.taskMgr.add(self.move_pkt, "move-pkt")
@@ -124,17 +123,26 @@ class MyGame(ShowBase):
         return task.cont
     
     
+    """
+    In general, setPos() means “teleport the object here” and setFluidPos() means “slide the object here, testing for collisions along the way”.
+    """
     def move_pkt(self, task):
         ft = globalClock.getFrameTime()
+        #if self.count < 20/75:
         for pkt in self.pkts:
             newPos = pkt.nextPos()
             if newPos != None:
-                pkt.lightModel.setPos(newPos[0], newPos[1], 0)
+                pkt.lightModel.setFluidPos(newPos[0], newPos[1], self.scaleZ/2)
+
+        #self.count += self.count
+        #print(self.count)
+        #if self.count >= 1:
+        #    self.count = 1/75
 
         return task.cont
 
 
-    def gen_figs(self, coords):
+    def gen_figs(self, coords, scaleZ):
         models = []
         print(coords)
         # generate figs
@@ -146,7 +154,7 @@ class MyGame(ShowBase):
                 h = float(h)
                 model = self.loader.loadModel("models/box")
                 center = (x + w/2, y + h/2, 0)
-                model.setScale(w, h, 30)
+                model.setScale(w, h, scaleZ)
                 
                 p = self.loader.loadModel("models/misc/sphere")
                 p.setPos(center)

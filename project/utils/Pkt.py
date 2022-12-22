@@ -11,6 +11,30 @@ class Pkt():
         self.path = self.calcPath()
 
 
+    def trajetoria(self):
+        start = self.endpoints[0]
+        end = self.endpoints[1]
+        xi = start[0]
+        xf = end[0]
+
+        yi = start[1]
+        yf = end[1]
+
+        inc_x = (xf-xi)/(self.time*75)
+        inc_y = (yf-yi)/(self.time*75)
+
+        print(inc_x, inc_y)
+
+        points = []
+        cp = start
+
+        for _ in range(self.time*75):
+            cp = (cp[0] + inc_x, cp[1] + inc_y)
+            points.append(cp)
+
+        return points
+
+
     """
     This function calculates the sequence of coordinates the packet will take, taking into account the time and velocity.
     There are 3 cases:
@@ -32,40 +56,58 @@ class Pkt():
         v = totalD/self.time
         points = [start]
 
+        t = 1/75
+        d = v * t
+        cd = 0
+        k = 1
+
+        print(d)
+        return self.trajetoria()
+
         # Case 1, straight vertical path
         if start[0] == end[0]:
             print("Case 1: Vertical path - x = " + str(start[0]) + " , totalD = " + str(totalD))
             y1 = start[1]
             y2 = end[1]
-            t = 1/75
-            d = v*t
-            cd = 0
-            k = 1
+            
             if y1 > y2:
                 k = -1
             rd = k * d
+
             while(cd < totalD):
                 for _ in range(75):
                     cd += d
-                    points.append((points[-1][0], points[-1][1] + rd))
+                    y = points[-1][1] + rd
+                    points.append((points[-1][0], y))
                     if cd >= totalD: break
+                    elif (k > 0) and (y >= end[1]): 
+                        cd = totalD
+                        break
+                    elif (k < 0) and (y <= end[1]): 
+                        cd = totalD
+                        break
         # Case 1, straight horizontal path
         elif start[1] == end[1]:
             print("Case 2: Horizontal path - y = " + str(start[1]) + " , totalD = " + str(totalD))
             x1 = start[0]
             x2 = end[0]
-            t = 1/75
-            d = v*t
-            cd = 0
-            k = 1
+
             if x1 > x2:
                 k = -1
             rd = k * d
+
             while(cd < totalD):
                 for _ in range(75):
                     cd += d
-                    points.append((points[-1][0] + rd, points[-1][1]))
+                    x = points[-1][0] + rd
+                    points.append((x, points[-1][1]))
                     if cd >= totalD: break
+                    elif (k > 0) and (x >= end[0]): 
+                        cd = totalD
+                        break
+                    elif (k < 0) and (x <= end[0]): 
+                        cd = totalD
+                        break
         # Case 3, y=mx+b path
         elif (start[0] != end[0]) and (start[1] != end[1]):
             # m = (y2-y1)/(x2-x1)
@@ -73,15 +115,10 @@ class Pkt():
             # b = y-mx
             b = end[1] - m * end[0]
 
-            x1 = start[0]
-            x2 = end[0]
-            t = 1/75
-            d = v*t
-            cd = 0
-            k = 1
             if m < 0:
                 k = -1
             rd = k * d
+
             while(cd < totalD):
                 for _ in range(75):
                     cd += d
@@ -100,7 +137,7 @@ class Pkt():
         #print(points[-1])
         #print(totalD)
         #print(self.endpoints)
-        #print(len(points))
+        print(len(points))
 
         return points
 
