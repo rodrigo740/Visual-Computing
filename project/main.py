@@ -89,7 +89,7 @@ class MyGame(ShowBase):
         
         # generate pkts
         for ((x1, y1), (x2, y2)) in paths:
-            for _ in range(100):
+            for _ in range(1):
                 x1 =float(x1)+60
                 y1 =float(y1)+30
 
@@ -109,8 +109,8 @@ class MyGame(ShowBase):
                 plnp = light_model.attachNewNode(plight)
 
                 pkt = packet.Pkt(((x1, y1), (x2, y2)), light_model, plnp, t)
-                #t += 2
-                #print("T: " + str(t))
+                t += 2
+                print("T: " + str(t))
                 self.pkts.append(pkt)
 
         #self.taskMgr.add(self.move_light, "move-light")
@@ -127,7 +127,9 @@ class MyGame(ShowBase):
     In general, setPos() means “teleport the object here” and setFluidPos() means “slide the object here, testing for collisions along the way”.
     """
     def move_pkt(self, task):
-        ft = globalClock.getFrameTime()
+        #ft = globalClock.getFrameTime()
+        #dt = globalClock.getDt()
+        #print(dt)
         #if self.count < 20/75:
         for pkt in self.pkts:
             newPos = pkt.nextPos()
