@@ -24,11 +24,12 @@ def getIPs():
         key = f.replace(".pcap", "").split(" ")
         dict[key[1]] = list((p['IP'].src, p['IP'].dst, p.time, 0) for p in PcapReader(path + f) if 'IP' in p)
         #msgs += list((p['IP'].src, p['IP'].dst, p.time) for p in PcapReader(path + f) if 'IP' in p)
-    """
+    
     for k in dict:
         for i in range(1, len(dict[k])):
-            dict[k]
-    """
+            (src, dst, time, delay) = dict[k][i-1]
+            dict[k][i-1] = (src, dst, time, dict[k][i][2] - dict[k][i-1][2])
+    print(dict)
     return dict
     #print(merda)
 

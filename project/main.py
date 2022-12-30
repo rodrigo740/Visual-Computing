@@ -168,7 +168,7 @@ class MyGame(ShowBase):
 
                 for k in self.ips:
                     #print(k)
-                    for (src, dst, time) in self.ips[k]:
+                    for (src, dst, time, delay) in self.ips[k]:
                         print("key: {}, src: {}, dst: {}".format(k, src, dst))
 
                         if self.dict[k] == src:
