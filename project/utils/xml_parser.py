@@ -15,33 +15,44 @@ def parseXML(xmlfile):
     # iterate news items
     for _ in root:
         for item in _.findall('mxCell'):
-            #print(item.tag, item.attrib)
+            #print(item.attrib['value'] if 'value' in item.attrib else "")
 
-            # get figures: pcs, sw, etc
-            for figure in item.findall('mxGeometry'):
-                x = figure.get('x')
-                y = figure.get('y')
-                w = figure.get('width')
-                h = figure.get('height')
-                if (x != None) and (y != None):
-                    #print(x, y)
-                    coords.append((x,y,w,h))
+            #for fig in item.findall('mxCell'):
+            #print(item.value)
 
-                # get connections aka paths
-                for con in figure.findall('mxPoint'):
-                    x = con.get('x')
-                    y = con.get('y')
+            if 'value' in item.attrib:
+                val = item.attrib['value']
+
+            
+                # get figures: pcs, sw, etc
+                for figure in item.findall('mxGeometry'):
+                    x = figure.get('x')
+                    y = figure.get('y')
+                    w = figure.get('width')
+                    h = figure.get('height')
+                    #if len(val.split(" ")) > 1:
+                    #    ip = val.split(" ")[1]
+                    ip = val
+                    #print(ip)
                     if (x != None) and (y != None):
-                        temp.append((x, y))
+                        #print(x, y)
+                        coords.append((x,y,w,h,ip))
 
-        #for item in _:
-        #    print(item.tag, item.attrib)
+                    # get connections aka paths
+                    for con in figure.findall('mxPoint'):
+                        temp.append(val)
+                        x = con.get('x')
+                        y = con.get('y')
+                        if (x != None) and (y != None):
+                            temp.append((x, y))
+            
+
     #print(temp)
     paths = []
     k = 0
-    for i in range(0, len(temp), 2):
+    for i in range(0, len(temp), 4):
         #print(i)
-        paths.append((temp[i], temp[i+1]))
+        paths.append((temp[i], temp[i+1], temp[i+3]))
         k += 1
 
     print("Paths: " + str(paths))
