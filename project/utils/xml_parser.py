@@ -55,5 +55,5 @@ def parseXML(xmlfile):
         paths.append((temp[i], temp[i+1], temp[i+3]))
         k += 1
 
-    print("Paths: " + str(paths))
+    #print("Paths: " + str(paths))
     return coords, paths

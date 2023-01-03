@@ -3,7 +3,7 @@ loadPrcFile("config/conf.prc")
 
 from direct.showbase.ShowBase import ShowBase
 from direct.filter.CommonFilters import CommonFilters
-from math import sin, cos, pi, dist
+from math import sin, cos, pi
 import utils.xml_parser as parser
 import utils.Pkt as packet
 import utils.pcapReader as reader
@@ -11,9 +11,12 @@ import sys
 
 
 class MyGame(ShowBase):
-    def __init__(self, coords, paths, ips):
+    def __init__(self, coords, paths, ips, times):
         super().__init__()
         self.accept("escape",sys.exit)
+
+        #self.dt = globalClock.getDt()
+        #print("DT: " + str(self.dt))
 
         self.set_background_color(0, 0, 0, 1)
         self.cam.setPos(320, 220, 2000)
@@ -22,6 +25,8 @@ class MyGame(ShowBase):
         self.cam.lookAt(320,220,0)
 
         self.scaleZ = 30
+
+        self.a = 1/90
 
         self.alight = AmbientLight("alight")
         self.alight.setColor((1, 1, 1, 1))
@@ -37,6 +42,7 @@ class MyGame(ShowBase):
 
         self.count = 1/75
         self.ips = ips
+        self.times = times
         self.paths = paths
         self.gen_pkts()
         
@@ -72,11 +78,8 @@ class MyGame(ShowBase):
             plnp = l2.attachNewNode(p2)
         """
 
-        t = 2
-
         filters = CommonFilters(self.win, self.cam)     # halo effect
         filters.setBloom(size="large")                  # halo effect
-        
         
 
         #self.taskMgr.add(self.move_light, "move-light")
@@ -94,13 +97,26 @@ class MyGame(ShowBase):
     """
     def move_pkt(self, task):
         #ft = globalClock.getFrameTime()
-        #dt = globalClock.getDt()
+        #a = globalClock.getDt()
+        #print(ft)
+        #self.dt += self.dt
+        #if ft >= 10:
+        #    print("10 seconds has passed")
         #print(dt)
         #if self.count < 20/75:
         for pkt in self.pkts:
-            newPos = pkt.nextPos()
-            if newPos != None:
-                pkt.lightModel.setFluidPos(newPos[0], newPos[1], self.scaleZ/2)
+            #print(pkt.timeStart)
+            if self.a >= pkt.timeStart:
+            #if ft >= pkt.timeStart:
+                newPos = pkt.nextPos()
+                if newPos != None:
+                    pkt.lightModel.reparentTo(self.render)
+
+                    pkt.lightModel.setFluidPos(newPos[0], newPos[1], self.scaleZ/2)
+                else:
+                    pkt.lightModel.removeNode()
+        self.a += 1/90
+        #print(self.a)
 
         #self.count += self.count
         #print(self.count)
@@ -112,7 +128,7 @@ class MyGame(ShowBase):
 
     def gen_figs(self, coords, scaleZ):
         models = []
-        print(coords)
+        #print(coords)
         # generate figs
         for (x, y, w, h, ip) in coords:
             if float(x) > 10 and w != None and h != None:
@@ -120,7 +136,7 @@ class MyGame(ShowBase):
                 y = float(y)
                 w = float(w)
                 h = float(h)
-                print(ip)
+                #print(ip)
 
                 
                 aux = ip.split(" ")
@@ -146,13 +162,13 @@ class MyGame(ShowBase):
 
     def gen_pkts(self):
         t = 2
-        print(self.ips)
-        print(self.dict)
+        #print(self.ips)
+        #print(self.dict)
         # generate pkts
         for (id, (x1, y1), (x2, y2)) in self.paths:
             for _ in range(1):
                 id = id.split(" ")[1]
-                print(id)
+                #print(id)
                 
                 x1 =float(x1)+60
                 y1 =float(y1)+30
@@ -163,13 +179,13 @@ class MyGame(ShowBase):
                 p1 = (x1,y1)
                 p2 = (x2,y2)
             
-                print(p1)
-                print(p2)
+                #print(p1)
+                #print(p2)
 
                 for k in self.ips:
                     #print(k)
-                    for (src, dst, time, delay) in self.ips[k]:
-                        print("key: {}, src: {}, dst: {}".format(k, src, dst))
+                    for (src, dst, time, delay, id, pid) in self.ips[k]:
+                        #print("key: {}, src: {}, dst: {}, time: {}, delay: {}, pid: {}".format(k, src, dst, time, delay, pid))
 
                         if self.dict[k] == src:
                             start = p1
@@ -180,16 +196,16 @@ class MyGame(ShowBase):
 
                         light_model = self.loader.loadModel("models/misc/sphere")
                         light_model.setScale(15)
-                        light_model.reparentTo(self.render)
+                        #light_model.reparentTo(self.render)
                         light_model.setPos(start[0], start[1], self.scaleZ/2)
 
                         plight = PointLight("plight")
                         plight.setColor((0, 1, 0, 1))
                         plnp = light_model.attachNewNode(plight)
 
-                        pkt = packet.Pkt((start, end), light_model, plnp, t)
-                        t += 0.5
-                        print("T: " + str(t))
+                        pkt = packet.Pkt((start, end), light_model, plnp, 1.5, float(time) + 1.5)
+                        #t += 0.5
+                        #print("T: " + str(t))
                         self.pkts.append(pkt)
 
 
@@ -227,8 +243,8 @@ class MyGame(ShowBase):
 
 def main():
     coords, paths = parser.parseXML("utils/diagram.xml")
-    ips = reader.getIPs()
-    game = MyGame(coords, paths, ips)
+    ips, times = reader.getIPs()
+    game = MyGame(coords, paths, ips, times)
     game.run()
 
 if __name__ == "__main__":

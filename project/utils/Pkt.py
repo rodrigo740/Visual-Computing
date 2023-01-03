@@ -1,13 +1,14 @@
 from math import dist
 
 class Pkt():
-    def __init__(self, endpoints, lightModel, plnp, time):
+    def __init__(self, endpoints, lightModel, plnp, time, timeStart):
         self.endpoints = endpoints
         self.lightModel = lightModel
         self.plnp = plnp
         self.currPos = endpoints[0]
         self.counter = 0
         self.time = time
+        self.timeStart = timeStart
         
         self.setup()
         
@@ -28,7 +29,7 @@ class Pkt():
         self.inc_x = (xf-xi)/(self.delta)
         self.inc_y = (yf-yi)/(self.delta)
 
-        print(self.inc_x, self.inc_y)
+        #print(self.inc_x, self.inc_y)
 
     # This functions calculates the full path of the packet
     def trajetoria(self):
