@@ -23,32 +23,65 @@ def getIPs():
     i = 0
     for f in files:
         key = f.replace(".pcap", "").split(" ")
+        #print(key[1])
         dict[key[1]] = []
         #dict[key[1]] = list((p['IP'].src, p['IP'].dst, p.time, 0) for p in PcapReader(path + f) if 'IP' in p)
         msgs += list((p['IP'].src, p['IP'].dst, p.time, 0, key[1], p["IP"].id) for p in PcapReader(path + f) if 'IP' in p)
+        
         
     sorted_list = sorted(
         msgs, 
         key= lambda t: t[2]
     )
     #print(msgs)
-    #print("\n Sorted:\n")
     #print(sorted_list)
 
+    
+    pNum = 0
     f = sorted_list[0][2]
     (src, dst, time, delay, id, pid) = sorted_list[0]
-    sorted_list[0] = (src, dst, 0, delay, id, pid)
-    
+    sorted_list[0] = (src, dst, 0, delay, id, pid, pNum)
+    dict[id].append(sorted_list[0])
+
     for i in range(1, len(sorted_list)):
+        pNum += 1
         diff = sorted_list[i][2] - f
         (src, dst, time, delay, id, pid) = sorted_list[i]
-        sorted_list[i] = (src, dst, diff, delay, id, pid)
+        sorted_list[i] = (src, dst, diff, delay, id, pid, pNum)
         dict[id].append(sorted_list[i])
 
+    
+    
     fList = []
-
     lids = []
 
+    #for _ in sorted_list:
+    #    print(_)
+
+    for i in range(len(sorted_list)):
+        (src, dst, time, delay, id, pid, pNum) = sorted_list[i]
+        newT = time + i * 1.5
+        sorted_list[i] = (src, dst, newT, delay, id, pid, pNum)
+    #print("\n Sorted:\n")
+    #for _ in sorted_list:
+    #    print(_)
+    #print()
+
+    fdict = {}
+
+    for b in dict:
+        fdict[b] = []
+        for i in dict[b]:
+            for p in sorted_list:
+                if p[6] == i[6]:
+                    #print(p)
+                    (src, dst, time, delay, id, pid, pNum) = p
+                    fdict[b].append((src, dst, time, delay, id, pid))
+                    #print(dict[b])
+
+                    
+
+    """
     for i in range(len(sorted_list)):
         pid = sorted_list[i][5]
         if pid not in lids:
@@ -65,6 +98,7 @@ def getIPs():
                     fList.append((src, dst, time, delay, id, pid))
             else:
                 fList.append(temp[0])
+    """
     
     #print("\n FList:\n")
 
@@ -86,7 +120,17 @@ def getIPs():
 
     #print("DICT")
     #print(dict)
-    return dict, fList
+    #print("FLIST: " + str(fList))
+    #for a in fList:
+    #    print(a)
+
+
+    #print("DICT: " + str(fdict))
+    #for b in fdict:
+    #    print("KEY: " + str(b))
+    #    for i in fdict[b]:
+    #        print(i)
+    return fdict
     
 
     """

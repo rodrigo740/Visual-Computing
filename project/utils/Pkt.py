@@ -41,7 +41,7 @@ class Pkt():
         yi = start[1]
         yf = end[1]
 
-        delta = self.time*90
+        delta = self.time*75
 
         inc_x = (xf-xi)/(delta)
         inc_y = (yf-yi)/(delta)

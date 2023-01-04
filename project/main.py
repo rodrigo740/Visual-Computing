@@ -3,6 +3,7 @@ loadPrcFile("config/conf.prc")
 
 from direct.showbase.ShowBase import ShowBase
 from direct.filter.CommonFilters import CommonFilters
+from direct.gui.DirectGui import *
 from math import sin, cos, pi
 import utils.xml_parser as parser
 import utils.Pkt as packet
@@ -11,13 +12,11 @@ import sys
 
 
 class MyGame(ShowBase):
-    def __init__(self, coords, paths, ips, times):
+    def __init__(self, coords, paths, ips):
         super().__init__()
         self.accept("escape",sys.exit)
 
-        #self.dt = globalClock.getDt()
-        #print("DT: " + str(self.dt))
-
+        
         self.set_background_color(0, 0, 0, 1)
         self.cam.setPos(320, 220, 2000)
         #self.cam.setHpr(0, 90, 0)
@@ -28,9 +27,16 @@ class MyGame(ShowBase):
 
         self.a = 1/90
 
+        #self.floor = self.loader.loadModel("my-models/floor")
+        #self.floor.setPos(0, 0, 0)
+        #self.floor.setScale(100)
+        #self.floor.reparentTo(self.render)
+
         self.alight = AmbientLight("alight")
-        self.alight.setColor((1, 1, 1, 1))
+        self.alight.setColor((0.04, 0.04, 0.04, 1))
         self.alnp = self.render.attachNewNode(self.alight)
+
+        #self.floor.setLight(self.alnp)
 
         self.dict = {}
         
@@ -42,9 +48,14 @@ class MyGame(ShowBase):
 
         self.count = 1/75
         self.ips = ips
-        self.times = times
         self.paths = paths
         self.gen_pkts()
+
+        #b = DirectButton(text=("Shadows", "click!", "rolling over", "disabled"), scale=.06, pos=(-1.5, 0.5, 0.5))
+        v = [0]
+        #b2 = DirectRadioButton(text='Shadows', variable=v, value=[1], scale=0.05, pos=(-1.5, 0.5, 0.4))
+
+        #b3 = DirectCheckButton(text = "Shadows" , scale=.05, command=self.b3Press)
         
         """
         for ((x1, y1), (x2, y2)) in paths:
@@ -78,8 +89,8 @@ class MyGame(ShowBase):
             plnp = l2.attachNewNode(p2)
         """
 
-        filters = CommonFilters(self.win, self.cam)     # halo effect
-        filters.setBloom(size="large")                  # halo effect
+        #filters = CommonFilters(self.win, self.cam)     # halo effect
+        #filters.setBloom(size="large")                  # halo effect
         
 
         #self.taskMgr.add(self.move_light, "move-light")
@@ -91,6 +102,9 @@ class MyGame(ShowBase):
 
         return task.cont
     
+    def b3Press(self, status):
+        print("Pressed")
+
     
     """
     In general, setPos() means “teleport the object here” and setFluidPos() means “slide the object here, testing for collisions along the way”.
@@ -161,32 +175,25 @@ class MyGame(ShowBase):
         return models
 
     def gen_pkts(self):
-        t = 2
-        #print(self.ips)
-        #print(self.dict)
         # generate pkts
         for (id, (x1, y1), (x2, y2)) in self.paths:
-            for _ in range(1):
-                id = id.split(" ")[1]
-                #print(id)
-                
-                x1 =float(x1)+60
-                y1 =float(y1)+30
-
-                x2 =float(x2)+60
-                y2 =float(y2)+30
-
-                p1 = (x1,y1)
-                p2 = (x2,y2)
+            id = id.split(" ")[1]
             
-                #print(p1)
-                #print(p2)
+            x1 =float(x1)+60
+            y1 =float(y1)+30
 
-                for k in self.ips:
-                    #print(k)
-                    for (src, dst, time, delay, id, pid) in self.ips[k]:
+            x2 =float(x2)+60
+            y2 =float(y2)+30
+
+            p1 = (x1,y1)
+            p2 = (x2,y2)
+
+            for k in self.ips:
+                #print(k)
+                if k == id:
+                    for (src, dst, time, delay, pc_id, pid) in self.ips[k]:
                         #print("key: {}, src: {}, dst: {}, time: {}, delay: {}, pid: {}".format(k, src, dst, time, delay, pid))
-
+                        #print(self.dict[k])
                         if self.dict[k] == src:
                             start = p1
                             end = p2
@@ -201,12 +208,19 @@ class MyGame(ShowBase):
 
                         plight = PointLight("plight")
                         plight.setColor((0, 1, 0, 1))
+                        #plight.setShadowCaster(True, 1024, 1024)        # shadows
+                        #self.render.setShaderAuto()                     # shadows
                         plnp = light_model.attachNewNode(plight)
+                        #self.floor.setLight(plnp)
 
-                        pkt = packet.Pkt((start, end), light_model, plnp, 1.5, float(time) + 1.5)
+                        pkt = packet.Pkt((start, end), light_model, plnp, 1.5, float(time))
                         #t += 0.5
                         #print("T: " + str(t))
                         self.pkts.append(pkt)
+
+        for mdl in self.models:
+            for pkt in self.pkts:
+                mdl.setLight(pkt.plnp)
 
 
 
@@ -242,9 +256,9 @@ class MyGame(ShowBase):
 
 
 def main():
-    coords, paths = parser.parseXML("utils/diagram.xml")
-    ips, times = reader.getIPs()
-    game = MyGame(coords, paths, ips, times)
+    coords, paths = parser.parseXML("utils/ndg.xml")
+    ips = reader.getIPs()
+    game = MyGame(coords, paths, ips)
     game.run()
 
 if __name__ == "__main__":
