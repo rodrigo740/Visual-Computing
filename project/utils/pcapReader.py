@@ -2,9 +2,9 @@ from scapy.all import *
 from os import listdir
 from os.path import isfile, join
 
-path = "captures/"
+path = "new caps/"
 files = [f for f in listdir(path) if isfile(join(path, f))]
-
+print(files)
 
 """
 scapy_cap = rdpcap('../captures/sw1_pc1.pcap')
@@ -59,9 +59,19 @@ def getIPs():
     #    print(_)
 
     for i in range(len(sorted_list)):
+        pid = sorted_list[i][5]
+        for j in range(i + 1, len(sorted_list)):
+            if pid == sorted_list[j][5]:
+                (src, dst, time, delay, id, pid, pNum) = sorted_list[j]
+                sorted_list[j] = (src, dst, time + 1.5, delay, id, pid, pNum)
+
+    """
+    for i in range(len(sorted_list)):
         (src, dst, time, delay, id, pid, pNum) = sorted_list[i]
-        newT = time + i * 1.5
+        #newT = time + i * 1
+        newT = time
         sorted_list[i] = (src, dst, newT, delay, id, pid, pNum)
+    """
     #print("\n Sorted:\n")
     #for _ in sorted_list:
     #    print(_)
