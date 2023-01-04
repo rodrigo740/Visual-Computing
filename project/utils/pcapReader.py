@@ -2,9 +2,9 @@ from scapy.all import *
 from os import listdir
 from os.path import isfile, join
 
-path = "new caps/"
+path = "demo/"
 files = [f for f in listdir(path) if isfile(join(path, f))]
-print(files)
+#print(files)
 
 """
 scapy_cap = rdpcap('../captures/sw1_pc1.pcap')
