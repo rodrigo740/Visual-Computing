@@ -1,7 +1,7 @@
 from math import dist
 
 class Pkt():
-    def __init__(self, endpoints, lightModel, plnp, time, timeStart):
+    def __init__(self, endpoints, lightModel, plnp, time, timeStart, protocol):
         self.endpoints = endpoints
         self.lightModel = lightModel
         self.plnp = plnp
@@ -9,7 +9,8 @@ class Pkt():
         self.counter = 0
         self.time = time
         self.timeStart = timeStart
-        
+        self.protocol = protocol
+
         self.setup()
         
         #self.path = self.calcPath()

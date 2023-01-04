@@ -26,7 +26,17 @@ def getIPs():
         #print(key[1])
         dict[key[1]] = []
         #dict[key[1]] = list((p['IP'].src, p['IP'].dst, p.time, 0) for p in PcapReader(path + f) if 'IP' in p)
-        msgs += list((p['IP'].src, p['IP'].dst, p.time, 0, key[1], p["IP"].id) for p in PcapReader(path + f) if 'IP' in p)
+        for p in PcapReader(path + f):
+            if 'IP' in p:
+                protocol = ""
+                if 'TCP' in p:
+                    protocol = "tcp"
+                elif 'ICMP' in p:
+                    protocol = "icmp"
+                elif 'UDP' in p:
+                    protocol = "udp"
+
+                msgs.append((p['IP'].src, p['IP'].dst, p.time, 0, key[1], p["IP"].id, protocol))
         
         
     sorted_list = sorted(
@@ -39,15 +49,15 @@ def getIPs():
     
     pNum = 0
     f = sorted_list[0][2]
-    (src, dst, time, delay, id, pid) = sorted_list[0]
-    sorted_list[0] = (src, dst, 0, delay, id, pid, pNum)
+    (src, dst, time, delay, id, pid, protocol) = sorted_list[0]
+    sorted_list[0] = (src, dst, 0, delay, id, pid, pNum, protocol)
     dict[id].append(sorted_list[0])
 
     for i in range(1, len(sorted_list)):
         pNum += 1
         diff = sorted_list[i][2] - f
-        (src, dst, time, delay, id, pid) = sorted_list[i]
-        sorted_list[i] = (src, dst, diff, delay, id, pid, pNum)
+        (src, dst, time, delay, id, pid, protocol) = sorted_list[i]
+        sorted_list[i] = (src, dst, diff, delay, id, pid, pNum, protocol)
         dict[id].append(sorted_list[i])
 
     
@@ -62,8 +72,8 @@ def getIPs():
         pid = sorted_list[i][5]
         for j in range(i + 1, len(sorted_list)):
             if pid == sorted_list[j][5]:
-                (src, dst, time, delay, id, pid, pNum) = sorted_list[j]
-                sorted_list[j] = (src, dst, time + 1.5, delay, id, pid, pNum)
+                (src, dst, time, delay, id, pid, pNum, protocol) = sorted_list[j]
+                sorted_list[j] = (src, dst, time + 1.5, delay, id, pid, pNum, protocol)
 
     """
     for i in range(len(sorted_list)):
@@ -85,8 +95,8 @@ def getIPs():
             for p in sorted_list:
                 if p[6] == i[6]:
                     #print(p)
-                    (src, dst, time, delay, id, pid, pNum) = p
-                    fdict[b].append((src, dst, time, delay, id, pid))
+                    (src, dst, time, delay, id, pid, pNum, protocol) = p
+                    fdict[b].append((src, dst, time, delay, id, pid, protocol))
                     #print(dict[b])
 
                     
