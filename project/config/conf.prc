@@ -1,4 +1,4 @@
-#win-size 2880 1800
+win-size 1980 1080
 #fullscreen
 window-title Network Visualizer
 show-frame-rate-meter true
