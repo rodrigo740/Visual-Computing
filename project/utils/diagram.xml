@@ -1,4 +1,4 @@
-<mxGraphModel dx="938" dy="567" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+<mxGraphModel dx="2058" dy="755" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
   <root>
     <mxCell id="0" />
     <mxCell id="1" parent="0" />
@@ -9,7 +9,7 @@
       <mxGeometry x="390" y="220" width="120" height="60" as="geometry" />
     </mxCell>
     <mxCell id="WX2U8tUYjLiM-ztilJwl-3" value="PC2 192.168.0.12" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-      <mxGeometry x="620" y="220" width="120" height="60" as="geometry" />
+      <mxGeometry x="630" y="221" width="120" height="60" as="geometry" />
     </mxCell>
     <mxCell id="WX2U8tUYjLiM-ztilJwl-4" value="link1 PC1" style="endArrow=none;html=1;rounded=0;" parent="1" edge="1">
       <mxGeometry width="50" height="50" relative="1" as="geometry">
@@ -19,8 +19,38 @@
     </mxCell>
     <mxCell id="WX2U8tUYjLiM-ztilJwl-5" value="link2 PC2" style="endArrow=none;html=1;rounded=0;" parent="1" edge="1">
       <mxGeometry width="50" height="50" relative="1" as="geometry">
-        <mxPoint x="510" y="249.5" as="sourcePoint" />
-        <mxPoint x="620" y="250" as="targetPoint" />
+        <mxPoint x="630" y="250" as="sourcePoint" />
+        <mxPoint x="510" y="249.5" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="oSsiydYRM341vV9YsvuG-1" value="PC3 192.168.0.13" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+      <mxGeometry x="390" y="90" width="120" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="oSsiydYRM341vV9YsvuG-2" value="PC4 192.168.0.14" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+      <mxGeometry x="275" y="320" width="120" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="oSsiydYRM341vV9YsvuG-3" value="SW2" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+      <mxGeometry x="45" y="320" width="120" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="oSsiydYRM341vV9YsvuG-4" value="PC5 192.168.0.15" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+      <mxGeometry x="45" y="440" width="120" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="oSsiydYRM341vV9YsvuG-5" value="link4 PC4" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1">
+      <mxGeometry width="50" height="50" relative="1" as="geometry">
+        <mxPoint x="275" y="348" as="sourcePoint" />
+        <mxPoint x="166" y="348" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="oSsiydYRM341vV9YsvuG-6" value="link5 PC5" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1">
+      <mxGeometry width="50" height="50" relative="1" as="geometry">
+        <mxPoint x="104.5" y="440" as="sourcePoint" />
+        <mxPoint x="104.5" y="380" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="oSsiydYRM341vV9YsvuG-10" value="link3 PC3" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1">
+      <mxGeometry width="50" height="50" relative="1" as="geometry">
+        <mxPoint x="449.5" y="150" as="sourcePoint" />
+        <mxPoint x="449.5" y="220" as="targetPoint" />
       </mxGeometry>
     </mxCell>
   </root>
