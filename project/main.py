@@ -33,8 +33,8 @@ class MyGame(ShowBase):
         self.floor.reparentTo(self.render)
 
         self.alight = AmbientLight("alight")
-        self.alight.setColor((0.04, 0.04, 0.04, 1))
-        #self.alight.setColor((0, 0, 0, 1))
+        #self.alight.setColor((0.04, 0.04, 0.04, 1))
+        self.alight.setColor((0.6, 0.6, 0.6, 1))
         self.alnp = self.render.attachNewNode(self.alight)
 
         self.floor.setLight(self.alnp)
@@ -56,10 +56,6 @@ class MyGame(ShowBase):
         self.disableTCP = False
         self.disableUDP = False
 
-        #b = DirectButton(text=("Shadows", "click!", "rolling over", "disabled"), scale=.06, pos=(-1.5, 0.5, 0.5))
-        v = [0]
-        #b2 = DirectRadioButton(text='Shadows', variable=v, value=[1], scale=0.05, pos=(-1.5, 0.5, 0.4))
-
         self.b3 = DirectCheckButton(text = "Pause" , scale=.08, command=self.b3Press, pos=(1.5, 0.5, 0.8))
         self.b4 = DirectCheckButton(text = "Shadows ON" , scale=.08, command=self.b4Press, pos=(1.5, 0.5, 0.5))
         #self.b5 = DirectCheckButton(text = "Follow" , scale=.08, command=self.b5Press, pos=(1.1, 0.5, 0.3))
@@ -72,7 +68,7 @@ class MyGame(ShowBase):
         self.pressed5 = False
 
         filters = CommonFilters(self.win, self.cam)     # halo effect
-        filters.setBloom(size="medium")                  # halo effect
+        filters.setBloom(size="medium")                 # halo effect
         
 
         self.taskMgr.add(self.move_pkt, "move-pkt")
@@ -89,13 +85,16 @@ class MyGame(ShowBase):
 
     def b4Press(self, status):
         if self.pressed4:
+            self.alight.setColor((0.6, 0.6, 0.6, 1))
             self.pressed4 = False
             self.render.setShaderOff()
             self.b4.setText("Shadows ON")
         else:
+            self.alight.setColor((0.04, 0.04, 0.04, 1))
             self.pressed4 = True
             self.render.setShaderAuto()
             self.b4.setText("Shadows OFF")
+
 
     def b5Press(self, status):
         #self.cam.lookAt(0, 0, 1)
