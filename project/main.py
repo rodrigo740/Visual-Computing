@@ -10,7 +10,6 @@ import utils.Pkt as packet
 import utils.pcapReader as reader
 import sys
 
-
 class MyGame(ShowBase):
     def __init__(self, coords, paths, ips):
         super().__init__()
@@ -57,55 +56,44 @@ class MyGame(ShowBase):
         v = [0]
         #b2 = DirectRadioButton(text='Shadows', variable=v, value=[1], scale=0.05, pos=(-1.5, 0.5, 0.4))
 
-        #b3 = DirectCheckButton(text = "Shadows" , scale=.05, command=self.b3Press)
-        
-        """
-        for ((x1, y1), (x2, y2)) in paths:
-            x1 =float(x1)+60
-            y1 =float(y1)+30
+        self.b3 = DirectCheckButton(text = "Pause" , scale=.08, command=self.b3Press, pos=(1.1, 0.5, 0.8))
+        self.b4 = DirectCheckButton(text = "Shadows ON" , scale=.08, command=self.b4Press, pos=(1.1, 0.5, 0.5))
+        #self.b5 = DirectCheckButton(text = "Follow" , scale=.08, command=self.b5Press, pos=(1.1, 0.5, 0.3))
+        self.pressed3 = False
+        self.pressed4 = False
+        self.pressed5 = False
 
-            x2 =float(x2)+60
-            y2 =float(y2)+30
-            
-            l1 = self.loader.loadModel("models/misc/sphere")
-            l1.setColor(1,0,0)
-            #self.l1.setScale(scale)
-            l1.setPos(x1, y1, self.scaleZ/2)
-            l1.reparentTo(self.render)
-
-            p1 = PointLight("p1")
-            p1.setColor((1, 0, 0, 1))
-            
-            plnp = l1.attachNewNode(p1)
-
-
-            l2 = self.loader.loadModel("models/misc/sphere")
-            l2.setColor(1,0,0)
-            #self.l2.setScale(scale)
-            l2.setPos(x2, y2, self.scaleZ/2)
-            l2.reparentTo(self.render)
-
-            p2 = PointLight("p2")
-            p2.setColor((1, 0, 0, 1))
-            
-            plnp = l2.attachNewNode(p2)
-        """
-
-        #filters = CommonFilters(self.win, self.cam)     # halo effect
-        #filters.setBloom(size="large")                  # halo effect
+        filters = CommonFilters(self.win, self.cam)     # halo effect
+        filters.setBloom(size="medium")                  # halo effect
         
 
-        #self.taskMgr.add(self.move_light, "move-light")
         self.taskMgr.add(self.move_pkt, "move-pkt")
-    
-    def move_light(self, task):
-        ft = globalClock.getFrameTime()
-        self.cam.setPos(cos(ft)*4, sin(ft)*4, 0)
 
-        return task.cont
-    
     def b3Press(self, status):
-        print("Pressed")
+        if self.pressed3:
+            self.pressed3 = False
+            self.taskMgr.add(self.move_pkt, "move-pkt")
+            self.b3.setText("Pause")
+        else:
+            self.taskMgr.remove("move-pkt")
+            self.pressed3 = True
+            self.b3.setText("Resume")
+
+    def b4Press(self, status):
+        if self.pressed4:
+            self.pressed4 = False
+            self.render.setShaderOff()
+            self.b4.setText("Shadows ON")
+        else:
+            self.pressed4 = True
+            self.render.setShaderAuto()
+            self.b4.setText("Shadows OFF")
+
+    def b5Press(self, status):
+        #self.cam.lookAt(0, 0, 1)
+        #self.cam.reparentTo(self.models[0])
+        #self.cam.setPos(0, 0, 5)
+        pass        
 
     
     """
@@ -120,19 +108,43 @@ class MyGame(ShowBase):
         #    print("10 seconds has passed")
         #print(dt)
         #if self.count < 20/75:
+        #print(len(self.pkts))
+        #i = 0
         for pkt in self.pkts:
+            #print(i)
+            #print(pkt)
             #print(pkt.timeStart)
             if self.a >= pkt.timeStart:
             #if ft >= pkt.timeStart:
                 newPos = pkt.nextPos()
+                #print(newPos)
                 if newPos != None:
                     pkt.lightModel.reparentTo(self.render)
-
                     pkt.lightModel.setFluidPos(newPos[0], newPos[1], self.scaleZ/2)
+                    #if i == 0:
+                        #print(self.pkts[0])
+                    #    print("here: " + str(newPos[0]))
+                    #    self.cam.lookAt(newPos[0], newPos[1], self.scaleZ/2)   
+                    #    i += 1                 
+
                 else:
+                    #if pkt == self.pkts[0]:
+                    #    print("asdas")
+                    #print("len before: ", len(self.pkts))
+                    #print("before: ", self.pkts[0])
+                    #print("len after: ", len(self.pkts))
+                    #print("after: ", self.pkts[0])
+                    
                     pkt.lightModel.removeNode()
                     pkt.plnp.removeNode()
                     self.pkts.remove(pkt)
+                    #print(len(self.pkts))
+                    #break
+                #print(self.pkts[0])
+        #print("pos: ", self.pkts[0].currPos[0], self.pkts[0].currPos[1])
+        #self.cam.lookAt(self.pkts[0].currPos[0], self.pkts[0].currPos[1], self.scaleZ/2)
+        #i += 1
+        #print("out: " + str(len(self.pkts)))
         self.a += 1/75
         #print(self.a)
 
@@ -140,6 +152,9 @@ class MyGame(ShowBase):
         #print(self.count)
         #if self.count >= 1:
         #    self.count = 1/75
+
+        if self.pkts == []:
+            exit(0)
 
         return task.cont
 
@@ -159,14 +174,10 @@ class MyGame(ShowBase):
                 if len(aux) > 1:
                     self.dict[aux[0]] = aux[1]
 
-                model = self.loader.loadModel("models/box")
                 center = (x + w/2, y + h/2, 0)
+
+                model = self.loader.loadModel("models/box")                
                 model.setScale(w, h, scaleZ)
-                """
-                p = self.loader.loadModel("models/misc/sphere")
-                p.setPos(center)
-                p.reparentTo(self.render)
-                """
                 model.setPos(center)
                 model.reparentTo(self.m)
                 model.setLight(self.alnp)
@@ -198,7 +209,6 @@ class MyGame(ShowBase):
                 if k == id:
                     for (src, dst, time, delay, pc_id, pid, protocol) in self.ips[k]:
                         #print("key: {}, src: {}, dst: {}, time: {}, delay: {}, pid: {}".format(k, src, dst, time, delay, pid))
-                        #print(self.dict[k])
                         if self.dict[k] == src:
                             start = p1
                             end = p2
@@ -231,56 +241,15 @@ class MyGame(ShowBase):
                             b = 0
 
                         plight.setColor((r, g, b, 1))
-                        #plight.setShadowCaster(True, 10, 10)        # shadows
+                        #light_model.setColor((r, g, b, 1))
 
                         plnp = light_model.attachNewNode(plight)
                         self.floor.setLight(plnp)
                         self.m.setLight(plnp)
 
                         pkt = packet.Pkt((start, end), light_model, plnp, 1.5, float(time), protocol)
-                        #t += 0.5
-                        #print("T: " + str(t))
                         self.pkts.append(pkt)
-                        
-            self.render.setShaderAuto()                   # shadows
-            
-        
-        """
-        for mdl in self.models:
-            for pkt in self.pkts:
-                mdl.setLight(pkt.plnp)
-        """
-
-
-        """
-        # generate pkts
-        for ((x1, y1), (x2, y2)) in paths:
-            for _ in range(1):
-                x1 =float(x1)+60
-                y1 =float(y1)+30
-
-                x2 =float(x2)+60
-                y2 =float(y2)+30
-
-                print((x1,y1))
-                print((x2,y2))
-
-                light_model = self.loader.loadModel("models/misc/sphere")
-                light_model.setScale(15)
-                light_model.reparentTo(self.render)
-                light_model.setPos(x1, y1, self.scaleZ/2)
-
-                plight = PointLight("plight")
-                plight.setColor((0, 1, 0, 1))
-                plnp = light_model.attachNewNode(plight)
-
-                pkt = packet.Pkt(((x1, y1), (x2, y2)), light_model, plnp, t)
-                #t += 2
-                print("T: " + str(t))
-                self.pkts.append(pkt)
-        """
-
-        
+            self.pktZ = self.pkts[0]
 
 
 def main():
