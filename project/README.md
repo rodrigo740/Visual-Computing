@@ -12,9 +12,9 @@ The following software must also be installed:
 * [Wireshark](https://www.wireshark.org/)
 
 # Steps
-* [Draw the network in DrawIO](##Draw-network-in-DrawIO)
-* [Simulate in GNS3](##Simulate-in-GNS3)
-* [Simulate in Panda3D](##Simulate-in-Panda3D)
+* [Draw the network in DrawIO](#draw-network-in-drawio)
+* [Simulate in GNS3](#simulate-in-gns3)
+* [Simulate in Panda3D](#simulate-in-panda3d)
 
 ## Draw network in DrawIO
 First start by drawing the network in DrawIO following the next rules:
