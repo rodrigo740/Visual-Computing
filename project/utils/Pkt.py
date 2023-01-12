@@ -1,5 +1,3 @@
-from math import dist
-
 class Pkt():
     def __init__(self, endpoints, lightModel, plnp, time, timeStart, protocol):
         self.endpoints = endpoints
@@ -12,9 +10,8 @@ class Pkt():
         self.protocol = protocol
 
         self.setup()
-        
-        #self.path = self.calcPath()
-
+    
+    # This function calculates the x and y increments over time
     def setup(self):
         start = self.endpoints[0]
         end = self.endpoints[1]
@@ -30,9 +27,8 @@ class Pkt():
         self.inc_x = (xf-xi)/(self.delta)
         self.inc_y = (yf-yi)/(self.delta)
 
-        #print(self.inc_x, self.inc_y)
 
-    # This functions calculates the full path of the packet
+    # This function calculates the full path of the packet
     def trajetoria(self):
         start = self.endpoints[0]
         end = self.endpoints[1]
